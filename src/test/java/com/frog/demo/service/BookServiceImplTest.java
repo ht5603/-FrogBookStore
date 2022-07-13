@@ -88,7 +88,7 @@ class BookServiceImplTest {
                 .setPublishDate("2022");
         List<Book> testBooks = new ArrayList<>();
         testBooks.add(book4);
-        bookService.createBooks(testBooks); //insert book1 to db
+        bookService.createBooks(testBooks); //insert book4 to db
         Book modifiedBook = bookService.queryBooks(null, "bookName4", null, null, null, null).get(0);
 
         //when modify name, price
@@ -124,7 +124,7 @@ class BookServiceImplTest {
         //when
         bookService.deleteByBookIds(actualBook.getId().toString());
         //then
-        List<Book> actualBooks = bookService.queryBooks(null, "bookName1", null, null, null, null);
+        List<Book> actualBooks = bookService.queryBooks(null, "bookName6", null, null, null, null);
         assertEquals(0, actualBooks.size());
     }
 
