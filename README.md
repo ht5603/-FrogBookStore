@@ -1,2 +1,2 @@
-# -FrogBookStore
+# FrogBookStore
 Frog Programming Test
