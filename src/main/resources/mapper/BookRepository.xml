@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.frog.demo.mapper.BookRepository">
+
+    <insert id = "createBookSeq">
+        create sequence book_seq
+    </insert>
+
+    <insert id="createBooksTable">
+        create table books (
+          id integer primary key,
+          name varchar(100) not null,
+          author varchar(50) not null,
+          price numeric(8, 2) not null,
+          house varchar(100) not null,
+          publish_date varchar(4) not null,
+          print integer not null,
+          create_dt varchar(14) not null,
+          update_dt varchar(14)
+        )
+    </insert>
+
+    <insert id="createBooks">
+        insert into books (id, name , author, price, house, publish_date, print, create_dt)
+            values
+        <foreach item="item" collection="books" separator=" , " open=" " close=" " index="index">
+            (book_seq.nextval, #{item.bookName}, #{item.author}, #{item.price}, #{item.house}, #{item.publishDate}, #{item.print}, to_char(sysdate, 'yyyymmddhh24miss'))
+        </foreach>
+    </insert>
+
+    <select id="queryBooks" resultType="com.frog.demo.model.Book">
+        select id as id, name as bookName , author as author, house as house, publish_date as publishDate
+             , price as price, print as print, create_dt as createDt, update_dt as updateDt
+        from books
+            where 1=1
+            <choose>
+                <when test="bookIds != null and bookIds.length > 0">
+                    and id in
+                    <foreach item="bookId" collection="bookIds" separator=" , " open=" ( " close=" ) " index="index">
+                        #{bookId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    <if test="bookName != null">
+                        and name like CONCAT('%',#{bookName},'%')
+                    </if>
+                    <if test="author != null">
+                        and author = #{author}
+                    </if>
+                    <if test="house != null">
+                        and house = #{house}
+                    </if>
+                    <if test="publishDtStart != null and publishDtEnd != null">
+                        and publish_date between #{publishDtStart} and #{publishDtEnd}
+                    </if>
+                </otherwise>
+            </choose>
+
+
+    </select>
+
+    <update id="updateBooks">
+        merge into books (id, name, author, price, house, publish_date, print, update_dt)
+        KEY (ID)
+        VALUES
+        <foreach item="item" collection="books" separator=" , " open=" " close=" " index="index">
+            (#{item.id}, #{item.bookName}, #{item.author}, #{item.price}, #{item.house}, #{item.publishDate}, #{item.print}, to_char(sysdate, 'yyyymmddhh24miss'))
+        </foreach>
+    </update>
+
+    <delete id="deleteBooks">
+        delete from books where id in
+        <foreach item="bookId" collection="bookIds" separator=" , " open=" ( " close=" ) " index="index">
+            #{bookId}
+        </foreach>
+    </delete>
+  
+</mapper>
